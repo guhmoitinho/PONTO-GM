@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14213D">
+<title>Ponto GM</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EEF1F4;--card:#FFFFFF;--ink:#14213D;--mute:#5B6579;--line:#D5DBE4;--amber:#F2A900;--in:#1F7A5A;--out:#B3402F;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1626;--card:#17233B;--ink:#EEF1F4;--mute:#9AA6BC;--line:#2A3A59;--in:#4CC79A;--out:#F0826F;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0E1626;--card:#17233B;--ink:#EEF1F4;--mute:#9AA6BC;--line:#2A3A59;--in:#4CC79A;--out:#F0826F;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,sans-serif;line-height:1.45}
+main{max-width:480px;margin:0 auto;padding:20px 18px 40px}
+[hidden]{display:none!important}
+header{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.logo{width:54px;height:54px;border-radius:14px;background:var(--ink);color:var(--amber);display:grid;place-items:center;font-weight:800;font-size:24px;letter-spacing:-1px;flex:none}
+header h1{margin:0;font-size:20px;font-weight:800;line-height:1.15}
+header p{margin:0;color:var(--mute);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px 18px}
+.clock{text-align:center}
+#hora{font-size:56px;font-weight:800;letter-spacing:-2px;font-variant-numeric:tabular-nums;line-height:1}
+#data{color:var(--mute);margin-top:6px;text-transform:capitalize}
+#status{margin:16px 0 0;font-weight:600;min-height:1.4em}
+#bater{width:100%;margin-top:14px;border:0;border-radius:16px;padding:20px;font-family:inherit;font-weight:800;font-size:22px;color:#fff;cursor:pointer}
+#bater:active{transform:scale(.97)}
+#bater.in{background:var(--in)}#bater.out{background:var(--out)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+h2{font-size:17px;margin:26px 0 10px;font-weight:800}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.kpi small{color:var(--mute);display:block}.kpi b{font-size:22px;font-variant-numeric:tabular-nums}
+.kpi.dark{background:var(--ink);border-color:var(--ink)}.kpi.dark small{color:var(--line)}.kpi.dark b{color:var(--amber)}
+.pos{color:var(--in)}.neg{color:var(--out)}
+ul{list-style:none;margin:0;padding:0;background:var(--card);border:1px solid var(--line);border-radius:16px}
+li{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+li:last-child{border-bottom:0}
+li[data-f]{cursor:pointer}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--line)}
+.entrada .dot,.on .dot{background:var(--in)}.saida .dot{background:var(--out)}
+li .t{font-weight:600;flex:1}li .t small{display:block;color:var(--mute);font-weight:400}
+li time,li .v{font-weight:800;font-variant-numeric:tabular-nums}
+li button{border:0;background:none;color:var(--mute);font-size:20px;padding:4px 8px;cursor:pointer}
+.vazio{padding:16px;color:var(--mute);text-align:center}
+.dia{display:flex;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.dia:last-child{border-bottom:0}.dia small{display:block;color:var(--mute)}
+.guia{border:1px dashed var(--line);border-radius:16px;padding:14px 16px;color:var(--mute);font-size:14px}
+label{display:block;font-weight:600;margin:12px 0 4px}
+input{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit}
+.btn{display:block;width:100%;margin-top:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:14px;font:inherit;font-weight:600;cursor:pointer}
+.btn.main{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.big{padding:22px;font-size:19px;font-weight:800;text-align:left}
+.btn.big small{display:block;font-weight:400;opacity:.75;font-size:14px}
+.perigo{color:var(--out)}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.top button{border:0;background:none;color:var(--mute);font:inherit;font-weight:600;cursor:pointer;padding:6px 0}
+.err{color:var(--out);font-weight:600;min-height:1.3em;margin:8px 0 0}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="logo" aria-hidden="true">GM</div>
+    <div><h1>Ponto GM</h1><p id="sub">Controle de ponto digital</p></div>
+  </header>
+
+  <!-- INÍCIO -->
+  <section id="home">
+    <button class="btn main big" id="goF" type="button">Sou funcionário<small>Bater ponto e ver minhas horas</small></button>
+    <button class="btn big" id="goA" type="button">Sou administrador<small>Cadastrar equipe e acompanhar o ponto</small></button>
+    <div class="guia" style="margin-top:18px">Os dois acessos usam este mesmo aparelho. Deixe-o num lugar fixo (como um tablet na entrada) e cada pessoa entra com a própria matrícula e senha.</div>
+  </section>
+
+  <!-- LOGIN FUNCIONÁRIO -->
+  <section id="loginF" hidden>
+    <div class="top"><button class="back" type="button">‹ Voltar</button></div>
+    <div class="card">
+      <b>Entrar como funcionário</b>
+      <label for="lMat">Matrícula</label><input id="lMat" inputmode="numeric" autocomplete="off">
+      <label for="lPin">Senha (PIN)</label><input id="lPin" type="password" inputmode="numeric" autocomplete="off">
+      <p class="err" id="errF"></p>
+      <button class="btn main" id="okF" type="button">Entrar</button>
+    </div>
+  </section>
+
+  <!-- LOGIN ADMIN -->
+  <section id="loginA" hidden>
+    <div class="top"><button class="back" type="button">‹ Voltar</button></div>
+    <div class="card">
+      <b>Entrar como administrador</b>
+      <label for="aPin">Senha do administrador</label><input id="aPin" type="password" inputmode="numeric" autocomplete="off">
+      <p class="err" id="errA"></p>
+      <button class="btn main" id="okA" type="button">Entrar</button>
+      <p style="color:var(--mute);font-size:14px;margin:12px 0 0">Primeiro acesso? A senha inicial é <b>1234</b>. Troque-a depois de entrar.</p>
+    </div>
+  </section>
+
+  <!-- ÁREA DO FUNCIONÁRIO -->
+  <section id="func" hidden>
+    <div class="top"><b id="fNome"></b><button class="sair" type="button">Sair</button></div>
+    <div class="card clock" aria-live="polite">
+      <div id="hora">--:--:--</div><div id="data"></div>
+      <p id="status"></p>
+      <button id="bater" type="button">Bater ponto</button>
+    </div>
+    <h2>Meu dia</h2>
+    <div class="grid">
+      <div class="kpi dark"><small>Trabalhado hoje</small><b id="total">0h 00min</b></div>
+      <div class="kpi"><small>Falta para a jornada</small><b id="falta">–</b></div>
+    </div>
+    <ul id="hoje" style="margin-top:10px"></ul>
+    <h2>Meu mês</h2>
+    <div class="grid">
+      <div class="kpi"><small>Dias trabalhados</small><b id="dias">0</b></div>
+      <div class="kpi"><small>Banco de horas</small><b id="saldo">0h 00min</b></div>
+    </div>
+    <h2>Meu espelho de ponto</h2>
+    <ul id="hist"></ul>
+    <button class="btn" id="envF" type="button">Compartilhar meu espelho</button>
+  </section>
+
+  <!-- ÁREA DO ADMINISTRADOR -->
+  <section id="admin" hidden>
+    <div class="top"><b>Painel do administrador</b><button class="sair" type="button">Sair</button></div>
+    <div class="grid">
+      <div class="kpi dark"><small>Funcionários</small><b id="nF">0</b></div>
+      <div class="kpi"><small>Trabalhando agora</small><b id="nOn">0</b></div>
+    </div>
+    <h2>Equipe</h2>
+    <ul id="lista"></ul>
+    <h2>Cadastrar funcionário</h2>
+    <div class="card">
+      <label for="nNome">Nome completo</label><input id="nNome" autocomplete="off">
+      <label for="nMat">Matrícula</label><input id="nMat" inputmode="numeric" autocomplete="off">
+      <label for="nPin">Senha (PIN) do funcionário</label><input id="nPin" inputmode="numeric" autocomplete="off">
+      <label for="nJor">Jornada diária (horas)</label><input id="nJor" type="number" min="1" max="12" step="0.5" value="8">
+      <p class="err" id="errN"></p>
+      <button class="btn main" id="addF" type="button">Cadastrar</button>
+    </div>
+    <h2>Relatórios e ajustes</h2>
+    <button class="btn" id="relG" type="button">Compartilhar relatório geral do mês</button>
+    <button class="btn" id="pinA" type="button">Alterar senha do administrador</button>
+  </section>
+
+  <!-- DETALHE DE UM FUNCIONÁRIO (ADMIN) -->
+  <section id="det" hidden>
+    <div class="top"><button id="voltaAdm" type="button">‹ Painel</button></div>
+    <h2 style="margin-top:0" id="dNome"></h2>
+    <p id="dInfo" style="color:var(--mute);margin:0 0 12px"></p>
+    <div class="grid">
+      <div class="kpi"><small>Dias no mês</small><b id="dDias">0</b></div>
+      <div class="kpi"><small>Banco de horas</small><b id="dSaldo">0h 00min</b></div>
+    </div>
+    <h2>Espelho do mês</h2>
+    <ul id="dHist"></ul>
+    <button class="btn main" id="envD" type="button">Compartilhar espelho</button>
+    <button class="btn perigo" id="delF" type="button">Excluir funcionário</button>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const KEY = 'gm-ponto-completo-v1';
+let S = { apin: '1234', funcs: [], recs: [] };
+try { const x = JSON.parse(localStorage.getItem(KEY)); if (x && Array.isArray(x.recs)) S = x; } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+const pad = n => String(n).padStart(2, '0');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const dkey = ts => { const d = new Date(ts); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
+const hm = ts => new Date(ts).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+const dur = ms => { const s = ms < 0 ? '-' : ''; const m = Math.floor(Math.abs(ms) / 60000); return s + Math.floor(m / 60) + 'h ' + pad(m % 60) + 'min'; };
+const hojeKey = () => dkey(Date.now());
+const mesKey = () => hojeKey().slice(0, 7);
+const doDia = (fid, k) => S.recs.filter(r => r.f === fid && dkey(r.ts) === k).sort((a, b) => a.ts - b.ts);
+const worked = (rs, now) => { let o = null, ms = 0; rs.forEach(r => { if (r.tipo === 'entrada') o = r.ts; else if (o !== null) { ms += r.ts - o; o = null; } }); if (o !== null && now) ms += now - o; return ms; };
+const dentro = fid => { const h = doDia(fid, hojeKey()); const u = h[h.length - 1]; return !!u && u.tipo === 'entrada'; };
+const getF = id => S.funcs.find(f => f.id === id);
+function resumo(f) {
+  const ds = [...new Set(S.recs.filter(r => r.f === f.id).map(r => dkey(r.ts)))].filter(k => k.startsWith(mesKey())).sort();
+  let t = 0; ds.forEach(k => t += worked(doDia(f.id, k), k === hojeKey() ? Date.now() : 0));
+  return { ds, dias: ds.length, saldo: t - f.jor * 3600000 * ds.length };
+}
+function diasHtml(f) {
+  const r = resumo(f);
+  return r.ds.length ? r.ds.slice().reverse().map(k => {
+    const rs = doDia(f.id, k), [y, m, d] = k.split('-').map(Number);
+    const nome = new Date(y, m - 1, d).toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' });
+    return `<div class="dia"><div><b>${nome}</b><small>${rs.map(x => (x.tipo === 'entrada' ? 'E ' : 'S ') + hm(x.ts)).join(' · ')}</small></div><b>${dur(worked(rs, k === hojeKey() ? Date.now() : 0))}</b></div>`;
+  }).join('') : '<div class="vazio">Nenhum registro neste mês.</div>';
+}
+function texto(f) {
+  const r = resumo(f), mes = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  let t = f.nome + ' (mat. ' + f.mat + ') – ' + mes;
+  r.ds.forEach(k => { const rs = doDia(f.id, k), p = k.split('-'); t += '\n' + p[2] + '/' + p[1] + ': ' + rs.map(x => (x.tipo === 'entrada' ? 'E ' : 'S ') + hm(x.ts)).join(' ') + ' = ' + dur(worked(rs, 0)); });
+  return t + '\nBanco de horas: ' + (r.saldo > 0 ? '+' : '') + dur(r.saldo);
+}
+async function enviar(txt) {
+  try { if (navigator.share) await navigator.share({ title: 'Espelho de ponto', text: txt }); else { await navigator.clipboard.writeText(txt); alert('Copiado. Cole no WhatsApp ou e-mail.'); } } catch (e) {}
+}
+
+let V = 'home', FID = null, DET = null;
+const VIEWS = ['home', 'loginF', 'loginA', 'func', 'admin', 'det'];
+function go(v) { V = v; VIEWS.forEach(x => $(x).hidden = x !== v); $('errF').textContent = $('errA').textContent = $('errN').textContent = ''; ['lMat', 'lPin', 'aPin'].forEach(i => $(i).value = ''); delete $('status').dataset.msg; render(); window.scrollTo(0, 0); }
+
+function render() {
+  if (V === 'func') {
+    const f = getF(FID); if (!f) return go('home');
+    $('fNome').textContent = f.nome;
+    const h = doDia(FID, hojeKey()), d = dentro(FID), b = $('bater');
+    b.textContent = d ? 'Bater saída' : 'Bater entrada'; b.className = d ? 'out' : 'in';
+    if (!$('status').dataset.msg) $('status').textContent = d ? 'Você está trabalhando desde ' + hm(h[h.length - 1].ts) : (h.length ? 'Fora do expediente' : 'Você ainda não bateu o ponto hoje');
+    $('hoje').innerHTML = h.length ? h.map(r => `<li class="${r.tipo === 'entrada' ? 'entrada' : 'saida'}"><i class="dot"></i><span class="t">${r.tipo === 'entrada' ? 'Entrada' : 'Saída'}</span><time>${hm(r.ts)}</time></li>`).join('') : '<div class="vazio">Nenhum registro hoje.</div>';
+    $('hist').innerHTML = diasHtml(f);
+  }
+  if (V === 'admin') {
+    $('nF').textContent = S.funcs.length;
+    $('nOn').textContent = S.funcs.filter(f => dentro(f.id)).length;
+    $('lista').innerHTML = S.funcs.length ? S.funcs.map(f => {
+      const on = dentro(f.id);
+      return `<li data-f="${f.id}" class="${on ? 'on' : ''}"><i class="dot"></i><span class="t">${esc(f.nome)}<small>mat. ${esc(f.mat)} · ${on ? 'trabalhando' : 'fora'}</small></span><span class="v">${dur(worked(doDia(f.id, hojeKey()), Date.now()))}</span></li>`;
+    }).join('') : '<div class="vazio">Nenhum funcionário ainda. Cadastre o primeiro abaixo.</div>';
+  }
+  if (V === 'det') {
+    const f = getF(DET); if (!f) return go('admin');
+    $('dNome').textContent = f.nome;
+    $('dInfo').textContent = 'Matrícula ' + f.mat + ' · jornada de ' + f.jor + 'h · ' + (dentro(f.id) ? 'trabalhando agora' : 'fora do expediente');
+    $('dHist').innerHTML = diasHtml(f);
+  }
+  tick();
+}
+function tick() {
+  const n = new Date();
+  if (V === 'func') {
+    $('hora').textContent = pad(n.getHours()) + ':' + pad(n.getMinutes()) + ':' + pad(n.getSeconds());
+    $('data').textContent = n.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+    const f = getF(FID); if (!f) return;
+    const jor = f.jor * 3600000, ms = worked(doDia(FID, hojeKey()), Date.now()), r = resumo(f);
+    $('total').textContent = dur(ms); $('falta').textContent = ms >= jor ? 'Cumprida' : dur(jor - ms);
+    $('dias').textContent = r.dias; $('saldo').textContent = (r.saldo > 0 ? '+' : '') + dur(r.saldo); $('saldo').className = r.saldo >= 0 ? 'pos' : 'neg';
+  }
+  if (V === 'det') {
+    const r = resumo(getF(DET) || { id: '', jor: 8 });
+    $('dDias').textContent = r.dias; $('dSaldo').textContent = (r.saldo > 0 ? '+' : '') + dur(r.saldo); $('dSaldo').className = r.saldo >= 0 ? 'pos' : 'neg';
+  }
+}
+
+$('goF').onclick = () => go('loginF');
+$('goA').onclick = () => go('loginA');
+document.querySelectorAll('.back').forEach(b => b.onclick = () => go('home'));
+document.querySelectorAll('.sair').forEach(b => b.onclick = () => { FID = null; go('home'); });
+$('okF').onclick = () => {
+  const f = S.funcs.find(x => x.mat === $('lMat').value.trim() && x.pin === $('lPin').value.trim());
+  if (!f) { $('errF').textContent = 'Matrícula ou senha incorreta. Confira e tente de novo.'; return; }
+  FID = f.id; go('func');
+};
+$('okA').onclick = () => {
+  if ($('aPin').value.trim() !== S.apin) { $('errA').textContent = 'Senha incorreta.'; return; }
+  go('admin');
+};
+$('bater').onclick = () => {
+  const tipo = dentro(FID) ? 'saida' : 'entrada', ts = Date.now();
+  S.recs.push({ f: FID, ts, tipo }); save(); render();
+  $('status').dataset.msg = '1';
+  $('status').textContent = (tipo === 'entrada' ? 'Entrada' : 'Saída') + ' registrada às ' + hm(ts);
+  if (navigator.vibrate) navigator.vibrate(60);
+};
+$('envF').onclick = () => enviar(texto(getF(FID)));
+$('addF').onclick = () => {
+  const nome = $('nNome').value.trim(), mat = $('nMat').value.trim(), pin = $('nPin').value.trim(), jor = parseFloat($('nJor').value) || 8;
+  const e = $('errN');
+  if (!nome || !mat || !pin) { e.textContent = 'Preencha nome, matrícula e senha.'; return; }
+  if (S.funcs.some(f => f.mat === mat)) { e.textContent = 'Essa matrícula já está cadastrada.'; return; }
+  S.funcs.push({ id: 'f' + Date.now(), nome, mat, pin, jor }); save();
+  ['nNome', 'nMat', 'nPin'].forEach(i => $(i).value = ''); e.textContent = ''; render();
+};
+$('lista').onclick = e => { const li = e.target.closest('[data-f]'); if (li) { DET = li.dataset.f; go('det'); } };
+$('voltaAdm').onclick = () => go('admin');
+$('envD').onclick = () => enviar(texto(getF(DET)));
+$('delF').onclick = () => {
+  const f = getF(DET);
+  if (f && confirm('Excluir ' + f.nome + ' e todos os registros dele? Isso não pode ser desfeito.')) { S.funcs = S.funcs.filter(x => x.id !== f.id); S.recs = S.recs.filter(r => r.f !== f.id); save(); go('admin'); }
+};
+$('relG').onclick = () => enviar(S.funcs.length ? S.funcs.map(texto).join('\n\n') : 'Nenhum funcionário cadastrado.');
+$('pinA').onclick = () => {
+  const n = prompt('Digite a nova senha do administrador:');
+  if (n && n.trim().length >= 4) { S.apin = n.trim(); save(); alert('Senha alterada.'); } else if (n !== null) alert('Use pelo menos 4 caracteres.');
+};
+
+go('home');
+setInterval(tick, 1000);
+</script>
+</body>
+</html>
